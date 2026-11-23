@@ -8,7 +8,7 @@
 
 ### 使用发布压缩包
 
-[下载 v1.4.2 安装 ZIP](https://github.com/liuqingwlil/qii-extension-manager/releases/download/v1.4.2/qii-extension-manager-1.4.2.zip)
+[下载 v1.4.3 安装 ZIP](https://github.com/liuqingwlil/qii-extension-manager/releases/download/v1.4.3/qii-extension-manager-1.4.3.zip)
 
 **Chrome 和 Edge 共用同一个 ZIP。** 将 ZIP 解压到固定目录，在两个浏览器的扩展管理页分别加载直接包含 `manifest.json` 的目录。安装后请保留该目录，浏览器会继续从中读取扩展文件。
 
@@ -114,7 +114,7 @@ npm run package
 
 首次运行集成测试前执行 `npx playwright install chromium`。完整测试使用 Playwright 自带 Chromium 的独立资料，管理专用测试扩展，不使用日常浏览器资料。验证结果及范围见 [交付验证](docs/VALIDATION.md)。
 
-`npm run package` 生成 `release/qii-extension-manager-1.4.2.zip`（安装包）和 `release/qii-extension-manager-1.4.2-source.zip`（源码包）。设计参考图和 ImageGen 提示词分别位于 `docs/design-reference.png` 与 `docs/design-prompt.txt`。爱莉希雅插画位于 `public/skins/elysia.png`，完整生成提示词在 `docs/elysia-skin-prompt.txt`。花瓣、水晶背景为本地可编辑 SVG：`public/skins/elysia-garden.svg`。
+`npm run package` 按当前版本生成 `release/qii-extension-manager-<版本>.zip`（安装包）和 `release/qii-extension-manager-<版本>-source.zip`（源码包）。设计参考图和 ImageGen 提示词分别位于 `docs/design-reference.png` 与 `docs/design-prompt.txt`。爱莉希雅插画位于 `public/skins/elysia.png`，完整生成提示词在 `docs/elysia-skin-prompt.txt`。花瓣、水晶背景为本地可编辑 SVG：`public/skins/elysia-garden.svg`。
 
 从 1.0.0 / 1.1.0 更新时，在原位置覆盖文件后到浏览器扩展页点击“重新加载”，即可保留同一扩展 ID 下的配置。若改用不同目录加载，浏览器可能生成不同 ID；请先导出配置，并在新安装后导入。旧版配置备份仍可导入，未保存皮肤选项时默认使用森林序曲。
 

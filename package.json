@@ -1,6 +1,6 @@
 {
   "name": "qii-extension-manager",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "private": true,
   "type": "module",
   "description": "栖 · Chrome 与 Edge 扩展管理器",

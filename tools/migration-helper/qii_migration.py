@@ -29,7 +29,7 @@ from qii_archive import (
     select_profile,
 )
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 HOST_NAME = "com.qii.migration"
 NATIVE_LIMIT = 1024 * 1024
 ORIGIN_RE = re.compile(r"chrome-extension://[a-p]{32}/\Z")

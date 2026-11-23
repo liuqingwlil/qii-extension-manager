@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { version as appVersion } from '../package.json';
 import {
   ArrowDownToLine,
   ArrowUpRight,
@@ -1726,7 +1727,7 @@ export default function App() {
                   </span>
                   <div>
                     <h2>
-                      栖 · 扩展管理器 <small>1.4.2</small>
+                      栖 · 扩展管理器 <small>{appVersion}</small>
                     </h2>
                     <p>让工具有序，让专注自然发生。</p>
                     <span className="muted small">

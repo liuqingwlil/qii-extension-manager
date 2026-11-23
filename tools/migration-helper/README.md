@@ -58,7 +58,7 @@ Chrome / Edge 启动 EXE 时会传入 `chrome-extension://<ID>/`。程序读取 
 {"action":"ping"}
 ```
 
-返回：`{"ok":true,"version":"1.1.0","capabilities":["export","import"]}`。
+返回：`{"ok":true,"version":"1.1.1","capabilities":["export","import"]}`。
 
 ```json
 {"action":"export","backup":{"app":"qii-extension-manager","version":2,"inventory":[],"data":{}},"browser":"Edge","managerId":"<32位ID>"}

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "栖 · 扩展管理器",
   "short_name": "栖",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "让扩展各就其位。搜索、分组、批量启停、工作场景、权限查看与配置备份，适用于 Chrome 和 Edge。",
   "minimum_chrome_version": "114",
   "permissions": ["management", "storage"],

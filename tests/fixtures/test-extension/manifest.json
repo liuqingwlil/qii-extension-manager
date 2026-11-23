@@ -1,0 +1,8 @@
+{
+  "manifest_version": 3,
+  "name": "Qii Test Fixture",
+  "version": "1.0.0",
+  "description": "A local fixture used only by Qii browser integration tests.",
+  "permissions": ["storage"],
+  "options_ui": { "page": "options.html", "open_in_tab": true }
+}

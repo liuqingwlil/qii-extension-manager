@@ -1,0 +1,8 @@
+{
+  "manifest_version": 3,
+  "name": "Qii Restore Extra Fixture",
+  "version": "2.0.0",
+  "description": "An isolated restore fixture; extensions outside the backup scope must keep their state.",
+  "permissions": ["storage"],
+  "options_ui": { "page": "options.html", "open_in_tab": true }
+}

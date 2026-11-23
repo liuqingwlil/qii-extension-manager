@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="590" viewBox="0 0 600 590" fill="none">
+  <defs>
+    <linearGradient id="petal" x1="0" y1="0" x2="24" y2="34" gradientUnits="userSpaceOnUse"><stop stop-color="#fff6fc"/><stop offset=".5" stop-color="#eeb3d0"/><stop offset="1" stop-color="#c47aaf"/></linearGradient>
+    <linearGradient id="gem" x1="0" y1="0" x2="32" y2="70" gradientUnits="userSpaceOnUse"><stop stop-color="#fffaff"/><stop offset=".48" stop-color="#e1c7ef"/><stop offset="1" stop-color="#ad86c4"/></linearGradient>
+    <linearGradient id="roseGem" x1="0" y1="0" x2="32" y2="70" gradientUnits="userSpaceOnUse"><stop stop-color="#fff7fc"/><stop offset=".5" stop-color="#f1c3dc"/><stop offset="1" stop-color="#ce82af"/></linearGradient>
+    <path id="p" d="M1 25C-3 12 4 1 17 0C27 8 23 23 8 33C8 29 4 26 1 25Z" fill="url(#petal)" stroke="#d893bc" stroke-width=".55"/>
+    <g id="crystal"><path d="M16 0L30 17L25 55L15 72L3 53L0 18Z" fill="url(#gem)" stroke="#b999cd" stroke-width=".7"/><path d="M16 0L10 21L15 72M10 21L0 18M10 21L30 17M10 21L25 55M10 21L3 53" stroke="#fff8ff" stroke-width="1"/><path d="M16 0L30 17L10 21Z" fill="#fffaff" opacity=".7"/><path d="M10 21L25 55L15 72Z" fill="#9f75bb" opacity=".28"/></g>
+    <g id="rose-crystal"><path d="M16 0L29 18L25 51L15 68L2 49L0 18Z" fill="url(#roseGem)" stroke="#cc97b9" stroke-width=".7"/><path d="M16 0L11 21L15 68M11 21L0 18M11 21L29 18M11 21L25 51" stroke="#fff8fd" stroke-width="1"/></g>
+    <g id="flower"><use href="#p" transform="translate(-8 -33) scale(.7)"/><use href="#p" transform="rotate(72) translate(-8 -33) scale(.7)"/><use href="#p" transform="rotate(144) translate(-8 -33) scale(.7)"/><use href="#p" transform="rotate(216) translate(-8 -33) scale(.7)"/><use href="#p" transform="rotate(288) translate(-8 -33) scale(.7)"/><circle r="3" fill="#fff3d8" stroke="#d6a5b7" stroke-width=".6"/></g>
+    <g id="star" stroke="#bd8daf" stroke-width=".8"><path d="M0-5V5M-5 0H5"/><path d="M-2-2L2 2M2-2L-2 2" opacity=".45"/></g>
+  </defs>
+  <!-- Header: all larger ornaments stay to the right of the reading area. -->
+  <path d="M351 123C419 126 425 14 507 16C548 16 573 54 615 43" stroke="#dfb5d0" stroke-width="1" opacity=".8"/>
+  <path d="M391 131C463 119 471 38 544 45C574 48 592 71 618 74" stroke="#f6d5e8" stroke-width="4" opacity=".7"/>
+  <use href="#crystal" transform="translate(356 29) rotate(-17) scale(.65)"/>
+  <use href="#rose-crystal" transform="translate(566 65) rotate(15) scale(.68)"/>
+  <use href="#flower" transform="translate(403 16) rotate(20) scale(.75)"/>
+  <use href="#p" transform="translate(527 5) rotate(57) scale(.44)"/>
+  <use href="#p" transform="translate(381 96) rotate(-25) scale(.5)"/>
+  <use href="#p" transform="translate(558 126) rotate(78) scale(.43)"/>
+  <use href="#star" transform="translate(423 66)"/><use href="#star" transform="translate(541 36) scale(.7)"/>
+  <!-- Quiet edge clusters stay behind opaque management surfaces. -->
+  <use href="#flower" transform="translate(7 287) rotate(-10) scale(1.15)"/>
+  <use href="#p" transform="translate(9 218) rotate(24) scale(.55)"/>
+  <use href="#p" transform="translate(16 365) rotate(-40) scale(.6)"/>
+  <use href="#crystal" transform="translate(574 306) rotate(11) scale(.9)"/>
+  <use href="#rose-crystal" transform="translate(590 389) rotate(23) scale(.65)"/>
+  <use href="#flower" transform="translate(595 491) rotate(8) scale(1.2)"/>
+  <use href="#p" transform="translate(571 227) rotate(-17) scale(.6)"/>
+  <use href="#p" transform="translate(3 468) rotate(-32) scale(.55)"/>
+  <use href="#star" transform="translate(14 407) scale(.8)"/><use href="#star" transform="translate(584 446)"/>
+  <use href="#rose-crystal" transform="translate(-10 540) rotate(-18) scale(.8)"/>
+  <use href="#p" transform="translate(123 558) rotate(45) scale(.6)"/>
+  <use href="#p" transform="translate(318 574) rotate(-53) scale(.5)"/>
+  <path d="M-12 566C40 534 46 595 119 576M498 586C546 549 557 568 611 536" stroke="#d7a4c5" stroke-width="1" opacity=".6"/>
+</svg>

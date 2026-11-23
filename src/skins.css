@@ -1,0 +1,496 @@
+/* Both entry points use the same semantic palette. Skin and display mode are independent. */
+:root {
+  --button-bg: #2c5b41;
+  --button-hover: #204a33;
+  --toggle-on: #36754e;
+  --toggle-hover: #285e3c;
+  --toggle-off: #aab8a9;
+  --selection-bg: #cfe2d3;
+  --selection-text: #214c34;
+  --selection-hover: #c4dac9;
+  --art-bg: #e3eddf;
+}
+:root[data-skin='forest'][data-theme='light'] {
+  --bg: #edf2eb;
+  --surface: #ffffff;
+  --sidebar: #f7faf4;
+  --text: #253b2c;
+  --ink: #253b2c;
+  --muted: #526558;
+  --line: #cbd7ca;
+  --subtle: #e2ebdf;
+  --soft: #eaf1e6;
+  --sage: #dce9d6;
+  --green: #29593d;
+  --green-hover: #204a33;
+  --accent: #35764f;
+  --input: #ffffff;
+  color: var(--text);
+  background: var(--bg);
+}
+:root[data-skin='forest'][data-theme='dark'] {
+  --bg: #17231b;
+  --surface: #223428;
+  --sidebar: #1b2c21;
+  --text: #e5f0e4;
+  --ink: #e5f0e4;
+  --muted: #b0c4af;
+  --line: #46614b;
+  --subtle: #314b38;
+  --soft: #2a4130;
+  --sage: #344e39;
+  --green: #afd1a9;
+  --green-hover: #c5e1c0;
+  --accent: #acd4b1;
+  --input: #223428;
+  --button-bg: #3c7150;
+  --button-hover: #4d845f;
+  --toggle-on: #4b8961;
+  --toggle-hover: #5a9b72;
+  --toggle-off: #657a67;
+  --selection-bg: #496950;
+  --selection-text: #f0f9ee;
+  --selection-hover: #567a5d;
+  --art-bg: #334b36;
+  color: var(--text);
+  background: var(--bg);
+}
+:root[data-skin='elysia'][data-theme='light'] {
+  --bg: #fff0f7;
+  --surface: #fffafd;
+  --sidebar: #fff5fa;
+  --text: #4d2d46;
+  --ink: #4d2d46;
+  --muted: #775369;
+  --line: #dfbfd2;
+  --subtle: #f6dceb;
+  --soft: #fbe7f2;
+  --sage: #f2d1e4;
+  --green: #8d3c6d;
+  --green-hover: #713158;
+  --accent: #a74578;
+  --input: #fffbfe;
+  --button-bg: #913b70;
+  --button-hover: #77305b;
+  --toggle-on: #a84479;
+  --toggle-hover: #893562;
+  --toggle-off: #c5a7b9;
+  --selection-bg: #edc3dc;
+  --selection-text: #652647;
+  --selection-hover: #e5b2d0;
+  --danger: #a34156;
+  --danger-bg: #f9dce3;
+  --overlay: #44243b52;
+  --shadow: 0 5px 18px #8f3d6a0c;
+  --art-bg: #f1cfe3;
+  color: var(--text);
+  background: var(--bg);
+}
+:root[data-skin='elysia'][data-theme='dark'] {
+  --bg: #241c2d;
+  --surface: #32263b;
+  --sidebar: #2c2033;
+  --text: #f6e6f1;
+  --ink: #f6e6f1;
+  --muted: #d0acc4;
+  --line: #70506a;
+  --subtle: #4a3045;
+  --soft: #402c3e;
+  --sage: #53364e;
+  --green: #edb2d4;
+  --green-hover: #ffd1eb;
+  --accent: #efb1d3;
+  --input: #32263b;
+  --button-bg: #98507e;
+  --button-hover: #ad638e;
+  --toggle-on: #b96897;
+  --toggle-hover: #d27eaf;
+  --toggle-off: #806477;
+  --selection-bg: #714463;
+  --selection-text: #fff1f9;
+  --selection-hover: #825171;
+  --danger: #f2b4c0;
+  --danger-bg: #573142;
+  --overlay: #100c1c85;
+  --shadow: 0 8px 24px #140c1d28;
+  --art-bg: #51334e;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Clear selection uses a stronger surface and a visible check; no outer frame or glow. */
+:root[data-skin] .status-filters button.active,
+:root[data-skin] .view-controls button.active,
+:root[data-skin] .segmented button.active,
+:root[data-skin] .view-switch button[aria-pressed='true'],
+:root[data-skin] .nav-item.active,
+:root[data-skin] .group-nav.active,
+:root[data-skin] .scene-state.active {
+  color: var(--selection-text);
+  background: var(--selection-bg);
+  font-weight: 700;
+}
+:root[data-skin] .status-filters button.active small,
+:root[data-skin] .nav-item.active small {
+  color: var(--selection-text);
+  font-weight: 600;
+}
+:root[data-skin] .main-tabs > button.active {
+  color: var(--selection-text);
+  background: var(--subtle);
+  font-weight: 700;
+}
+:root[data-skin] .extension-tile.selected,
+:root[data-skin] .extension-card.selected {
+  background: var(--selection-bg);
+}
+:root[data-skin] .extension-tile.selected:hover,
+:root[data-skin] .extension-card.selected:hover {
+  background: var(--selection-hover);
+}
+:root[data-skin] .view-controls,
+:root[data-skin] .view-switch {
+  background: var(--surface);
+}
+:root[data-skin] .selection-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  line-height: 1.3;
+  color: var(--selection-text);
+  font-weight: 700;
+  white-space: nowrap;
+}
+:root[data-skin] .main-selection-label {
+  margin-right: auto;
+}
+:root[data-skin] .tile-top .selection-label {
+  font-size: 8px;
+  gap: 1px;
+}
+:root[data-skin] .tile-top .selection-label svg {
+  width: 9px;
+}
+:root[data-skin] .view-list .tile-top .selection-label {
+  font-size: 10px;
+}
+:root[data-skin] .is-disabled .app-icon,
+:root[data-skin] .is-disabled .tile-identity > .extension-icon {
+  opacity: 0.9;
+  filter: saturate(0.7);
+}
+:root[data-skin] .toggle {
+  background: var(--toggle-off);
+}
+:root[data-skin] .toggle.on {
+  background: var(--toggle-on);
+}
+:root[data-skin] .toggle:hover:not(:disabled):not(.on) {
+  background: var(--toggle-off);
+}
+:root[data-skin] .toggle.on:hover:not(:disabled) {
+  background: var(--toggle-hover);
+}
+:root[data-skin] input[type='checkbox'] {
+  accent-color: var(--toggle-on);
+}
+:root[data-skin] .button.primary,
+:root[data-skin] .primary-button {
+  color: #fff;
+  background: var(--button-bg);
+  border-color: var(--button-bg);
+}
+:root[data-skin] .button.primary:hover,
+:root[data-skin] .primary-button:hover:not(:disabled) {
+  background: var(--button-hover);
+  border-color: var(--button-hover);
+}
+:root[data-skin] .live-dot,
+:root[data-skin] .online-dot {
+  background: var(--accent, var(--green));
+}
+:root[data-skin] .group-tag {
+  color: var(--muted);
+}
+:root[data-skin] .favorite.is-favorite,
+:root[data-skin] .favorite-button.active,
+:root[data-skin] .tile-star {
+  color: #91703f;
+}
+:root[data-skin='elysia'] .favorite.is-favorite,
+:root[data-skin='elysia'] .favorite-button.active,
+:root[data-skin='elysia'] .tile-star {
+  color: var(--green);
+}
+
+/* Shared skin switcher, embedded in both settings surfaces. */
+.skin-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 17px;
+}
+.skin-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 9px 9px 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+}
+:root[data-skin] .skin-option:hover:not(:disabled) {
+  background: var(--soft);
+}
+:root[data-skin] .skin-option.is-current {
+  background: var(--selection-bg);
+}
+:root[data-skin] .skin-option.is-current:hover:not(:disabled) {
+  background: var(--selection-hover);
+}
+:root[data-skin] .skin-option:focus-visible {
+  outline: none;
+  box-shadow: none;
+  text-decoration: none;
+}
+.skin-option:focus-visible .skin-option-copy strong {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.skin-preview {
+  position: relative;
+  height: 109px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 15px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #e1ebdb;
+  width: 100%;
+}
+.skin-elysia .skin-preview {
+  background: linear-gradient(125deg, #f6deef, #e5ceeb);
+}
+.mini-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 19%;
+  height: 62px;
+}
+.mini-nav i {
+  display: block;
+  height: 6px;
+  border-radius: 2px;
+  background: #b9cdb1;
+}
+.mini-nav i:first-child {
+  background: #5d865e;
+}
+.mini-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 62%;
+}
+.mini-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border-radius: 4px;
+  background: #ffffffd9;
+}
+.mini-tile i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: #5b815c;
+}
+.mini-tile b {
+  width: 70%;
+  height: 3px;
+  background: #aabfa1;
+  border-radius: 1px;
+}
+.skin-elysia .mini-nav i {
+  background: #d4accb;
+}
+.skin-elysia .mini-nav i:first-child,
+.skin-elysia .mini-tile i {
+  background: #a35288;
+}
+.skin-elysia .mini-tile b {
+  background: #d9b3cc;
+}
+.skin-elysia .mini-tiles {
+  width: 45%;
+}
+.skin-character {
+  position: absolute;
+  right: -13px;
+  bottom: -42px;
+  width: 151px;
+  height: 151px;
+  object-fit: contain;
+  pointer-events: none;
+}
+.skin-option-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px 5px 0;
+}
+.skin-option-copy strong {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text, var(--ink));
+}
+.skin-option-copy small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.skin-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--selection-text);
+  font-size: 10px;
+  font-weight: 650;
+  padding: 9px 5px 0;
+}
+.skin-option:not(.is-current) {
+  padding-bottom: 37px;
+}
+.skin-section .section-title p {
+  line-height: 1.8;
+}
+.tool-section.skin-section .skin-picker {
+  gap: 11px;
+  margin-top: 14px;
+}
+.tool-section.skin-section .skin-preview {
+  height: 85px;
+  padding: 11px;
+}
+.tool-section.skin-section .skin-option {
+  border-radius: 10px;
+}
+.tool-section.skin-section .skin-option-copy strong {
+  font-size: 12px;
+}
+.tool-section.skin-section .skin-option-copy small {
+  font-size: 9px;
+}
+.tool-section.skin-section .skin-character {
+  height: 133px;
+  width: 133px;
+  bottom: -42px;
+  right: -7px;
+}
+
+.skin-avatar {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--art-bg);
+  flex-shrink: 0;
+}
+.skin-avatar > img {
+  position: absolute;
+  width: 90px;
+  height: 82px;
+  max-width: none;
+  object-fit: contain;
+  left: -31px;
+  top: -2px;
+}
+.sidebar .skin-avatar {
+  width: 34px;
+  height: 34px;
+  margin-left: -3px;
+}
+.sidebar .skin-avatar > img {
+  width: 72px;
+  height: 66px;
+  left: -25px;
+  top: -2px;
+}
+:root[data-skin='elysia'] .popup-header {
+  background: linear-gradient(100deg, var(--surface), var(--subtle));
+}
+:root[data-skin='elysia'] .brand small {
+  color: var(--green);
+}
+:root[data-skin='elysia'] .scene-banner {
+  min-height: 154px;
+  padding-right: 190px;
+  background: linear-gradient(105deg, var(--subtle), var(--sage));
+  flex-wrap: wrap;
+  gap: 15px;
+}
+:root[data-skin='elysia'] .scene-banner .botanical {
+  display: none;
+}
+:root[data-skin='elysia'] .quick-scenes {
+  margin-right: 0;
+  max-width: 100%;
+}
+:root[data-skin='elysia'] .scene-pill {
+  border-color: var(--line);
+}
+.elysia-banner-art {
+  position: absolute;
+  width: 213px;
+  height: 213px;
+  right: -2px;
+  bottom: -67px;
+  object-fit: contain;
+  pointer-events: none;
+}
+:root[data-skin='elysia'] .sidebar-note {
+  background: var(--subtle);
+  color: var(--green);
+}
+:root[data-skin='elysia'] .scene-symbol {
+  background: var(--subtle);
+  color: var(--green);
+}
+:root[data-skin='elysia'] .scene-card {
+  background: var(--surface);
+}
+:root[data-skin='elysia'] .scene-card-icon {
+  color: var(--green);
+  background: var(--subtle);
+}
+@media (max-width: 1080px) {
+  :root[data-skin='elysia'] .scene-banner {
+    padding-right: 155px;
+  }
+  .elysia-banner-art {
+    width: 180px;
+    height: 180px;
+    bottom: -50px;
+    right: -4px;
+  }
+}
+@media (max-width: 560px) {
+  .tool-section.skin-section .skin-character {
+    right: -20px;
+  }
+  .tool-section.skin-section .skin-preview {
+    padding: 8px;
+  }
+  .tool-section.skin-section .skin-option-copy small {
+    font-size: 8px;
+  }
+}

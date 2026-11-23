@@ -1,0 +1,39 @@
+{
+  "name": "qii-extension-manager",
+  "version": "1.4.2",
+  "private": true,
+  "type": "module",
+  "description": "栖 · Chrome 与 Edge 扩展管理器",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "test:e2e": "node tests/e2e.mjs",
+    "test:popup": "node tests/popup-e2e.mjs",
+    "test:popup-stability": "node tests/popup-stability-e2e.mjs",
+    "test:skin": "node tests/skin-e2e.mjs",
+    "test:skin-art": "node tests/skin-art-e2e.mjs",
+    "test:restore": "node tests/restore-e2e.mjs",
+    "test:migration-ui": "node tests/migration-e2e.mjs",
+    "test:migration-helper": "python -m unittest discover -s tools/migration-helper -p test_*.py",
+    "package": "node scripts/package.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^1.74.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/chrome": "^0.3.7",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "fflate": "^0.8.3",
+    "prettier": "^3.10.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}

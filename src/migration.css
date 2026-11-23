@@ -1,0 +1,175 @@
+.migration-section {
+  scroll-margin-top: 20px;
+}
+.migration-connection-state {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.migration-connection-state small {
+  color: var(--muted);
+  white-space: nowrap;
+}
+.migration-connection-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.migration-connection-actions .button {
+  padding: 5px 9px;
+  font-size: 11px;
+}
+.migration-connection-state {
+  align-items: center;
+}
+.migration-auto-hint {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 8px 0;
+}
+.migration-transfer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 12px;
+}
+.migration-boundary {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.migration-setup {
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-top: 16px;
+}
+.migration-setup summary {
+  cursor: pointer;
+  font-weight: 550;
+}
+.migration-setup ol {
+  padding-left: 20px;
+  font-size: 12px;
+  line-height: 2;
+  color: var(--muted);
+}
+.migration-setup li {
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.migration-setup a {
+  color: var(--green);
+  text-decoration: underline;
+}
+.migration-setup li .button {
+  padding: 3px 7px;
+  margin-left: 8px;
+  font-size: 11px;
+}
+.migration-setup code {
+  user-select: all;
+}
+.migration-browser {
+  display: inline-block;
+  color: var(--muted);
+  margin: 8px 12px;
+  font-size: 11px;
+}
+.migration-connected,
+.migration-busy {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--green);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.migration-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.migration-error svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.migration-result {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.migration-result h3 {
+  font-size: 15px;
+  margin: 0 0 10px;
+}
+.migration-result > p,
+.migration-report-path {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.migration-path {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+  font-size: 11px;
+}
+.migration-path code {
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.migration-result ul {
+  list-style: none;
+  padding: 0;
+  max-height: 260px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.migration-result li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.migration-result li:last-child {
+  border-bottom: 0;
+}
+.migration-result li b {
+  font-weight: 550;
+  flex: 1;
+}
+.migration-result li > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.migration-result li small,
+.migration-result li code {
+  flex-basis: 100%;
+  font-size: 11px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}

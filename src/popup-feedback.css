@@ -1,0 +1,44 @@
+/* Feedback never changes the list's available height or scroll position. */
+.popup-base > .popup-feedback {
+  position: absolute;
+  z-index: 5;
+  bottom: 34px;
+  left: 16px;
+  right: 16px;
+  margin: 0;
+  max-height: min(112px, 30vh);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.popup-footer > .footer-notice,
+.popup-footer > .footer-inventory {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.popup-footer > .footer-notice {
+  color: var(--green);
+}
+.popup-footer > .footer-notice > span,
+.popup-footer > .footer-inventory > span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.popup-footer > span:last-child {
+  flex-shrink: 0;
+}
+.toggle[aria-busy='true']:disabled {
+  opacity: 1;
+  cursor: progress;
+}
+.toggle > .toggle-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+}
+.toggle-thumb > svg {
+  width: 8px;
+  height: 8px;
+}

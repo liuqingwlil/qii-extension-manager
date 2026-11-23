@@ -1,0 +1,343 @@
+/* The illustration has its own header stage; management surfaces stay opaque. */
+:root[data-skin='elysia'] .popup-shell {
+  isolation: isolate;
+}
+.elysia-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: url('/skins/elysia-garden.svg') center top / 600px 590px no-repeat;
+  opacity: 0.8;
+}
+:root[data-skin='elysia'] .popup-base {
+  position: relative;
+  z-index: 1;
+}
+:root[data-skin='elysia'] .popup-header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: 84px;
+  min-height: 84px;
+  padding: 8px 16px;
+  display: block;
+  background-color: #f7dfef;
+  background-image:
+    url('/skins/elysia-garden.svg'), linear-gradient(100deg, #fff7fc 0%, #f6deee 58%, #e9d7f0 100%);
+  background-size:
+    600px 590px,
+    100% 100%;
+  background-position:
+    center top,
+    center;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid var(--line);
+}
+:root[data-skin='elysia'] .popup-header > .brand {
+  position: relative;
+  z-index: 1;
+  width: 270px;
+  max-width: calc(100% - 205px);
+  gap: 8px;
+}
+:root[data-skin='elysia'] .popup-header .skin-avatar {
+  width: 32px;
+  height: 32px;
+}
+:root[data-skin='elysia'] .popup-header .skin-avatar > img {
+  width: 72px;
+  height: 66px;
+  left: -25px;
+}
+:root[data-skin='elysia'] .popup-header .brand strong {
+  font-size: 19px;
+}
+:root[data-skin='elysia'] .popup-header .brand strong span {
+  font-size: 12px;
+}
+:root[data-skin='elysia'] .popup-header .brand small {
+  display: none;
+}
+.elysia-header-caption {
+  position: absolute;
+  z-index: 1;
+  top: 36px;
+  left: 56px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  color: var(--ink);
+}
+.elysia-header-caption small {
+  display: none;
+}
+.elysia-header-caption strong {
+  font-size: 9px;
+  line-height: 11px;
+  font-weight: 650;
+  letter-spacing: 0.4px;
+}
+.elysia-header-art,
+.elysia-header-art * {
+  pointer-events: none;
+}
+.elysia-header-art {
+  position: absolute;
+  z-index: 0;
+  right: 39px;
+  top: -11px;
+  width: 185px;
+  height: 170px;
+}
+.elysia-portrait {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+  user-select: none;
+}
+.elysia-art-ring {
+  position: absolute;
+  left: 15px;
+  top: 10px;
+  width: 158px;
+  height: 158px;
+  border-radius: 50%;
+  border: 1px solid #fff9fc;
+  background: linear-gradient(145deg, #ffffff45, #cbb4e130);
+}
+.elysia-art-ring::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  border: 1px solid #cdabd64f;
+}
+.elysia-crystal {
+  position: absolute;
+  z-index: 3;
+  width: 17px;
+  height: 42px;
+  background: linear-gradient(120deg, #fff8ff 0 30%, #dec4ee 31% 55%, #b690ca 56% 73%, #f4e3fc 74%);
+  clip-path: polygon(49% 0, 100% 25%, 87% 77%, 49% 100%, 6% 75%, 0 26%);
+}
+.elysia-crystal.crystal-1 {
+  left: 2px;
+  top: 47px;
+  transform: rotate(-20deg);
+}
+.elysia-crystal.crystal-2 {
+  right: -9px;
+  top: 62px;
+  width: 13px;
+  height: 31px;
+  transform: rotate(16deg);
+}
+.elysia-crystal.crystal-3 {
+  right: 5px;
+  top: 13px;
+  width: 10px;
+  height: 24px;
+  transform: rotate(30deg);
+  opacity: 0.75;
+}
+:root[data-skin='elysia'] .popup-header > .header-actions {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+}
+:root[data-skin='elysia'] .popup-header .running-stat {
+  display: flex;
+  position: absolute;
+  left: 16px;
+  bottom: 8px;
+  pointer-events: auto;
+}
+:root[data-skin='elysia'] .popup-header .header-actions > .text-icon {
+  position: absolute;
+  left: 104px;
+  bottom: 5px;
+  padding: 5px 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  pointer-events: auto;
+  color: var(--ink);
+}
+:root[data-skin='elysia'] .popup-header .header-actions > .close-button {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  z-index: 3;
+  background: var(--surface);
+  pointer-events: auto;
+}
+:root[data-skin='elysia'] .popup-header .header-actions > .header-collapse-button {
+  position: absolute;
+  top: 9px;
+  right: 49px;
+  z-index: 3;
+  background: var(--surface);
+  pointer-events: auto;
+}
+:root[data-skin='elysia'] .main-tabs {
+  background: var(--surface);
+}
+:root[data-skin='elysia'] .extension-list {
+  position: relative;
+}
+:root[data-skin='elysia'] .extension-tile {
+  background: var(--surface);
+}
+:root[data-skin='elysia'] .extension-tile.selected {
+  background: var(--selection-bg);
+}
+:root[data-skin='elysia'] .extension-tile:hover {
+  background: var(--soft);
+}
+:root[data-skin='elysia'] .extension-tile.selected:hover {
+  background: var(--selection-hover);
+}
+:root[data-skin='elysia'] .message {
+  max-height: 44px;
+}
+:root[data-skin='elysia'][data-theme='dark'] .elysia-ambient {
+  opacity: 0.26;
+}
+:root[data-skin='elysia'][data-theme='dark'] .popup-header {
+  background-color: #51304d;
+  background-image: linear-gradient(100deg, #2f243cee, #59354bc9), url('/skins/elysia-garden.svg');
+  background-size:
+    100% 100%,
+    600px 590px;
+  background-position:
+    center,
+    center top;
+}
+:root[data-skin='elysia'][data-theme='dark'] .elysia-art-ring {
+  border-color: #ddafd679;
+  background: linear-gradient(145deg, #d1a5c425, #6d4a7a35);
+}
+:root[data-skin='elysia'][data-theme='dark'] .elysia-art-ring::after {
+  border-color: #e6c3dd25;
+}
+@media (max-width: 560px) {
+  :root[data-skin='elysia'] .popup-header > .brand {
+    max-width: calc(100% - 185px);
+  }
+  :root[data-skin='elysia'] .popup-header .brand strong {
+    font-size: 17px;
+    letter-spacing: 0.4px;
+  }
+  :root[data-skin='elysia'] .popup-header .brand strong span {
+    font-size: 11px;
+  }
+  :root[data-skin='elysia'] .popup-header .skin-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  :root[data-skin='elysia'] .popup-header .skin-avatar > img {
+    width: 72px;
+    height: 66px;
+    left: -25px;
+  }
+  .elysia-header-art {
+    right: 36px;
+    top: -8px;
+    width: 150px;
+    height: 138px;
+  }
+  .elysia-art-ring {
+    width: 130px;
+    height: 130px;
+    left: 12px;
+    top: 5px;
+  }
+  .elysia-header-caption {
+    top: 34px;
+    left: 52px;
+    max-width: calc(100% - 190px);
+  }
+  .elysia-header-caption strong {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+  .elysia-crystal.crystal-3 {
+    top: 6px;
+  }
+}
+@media (max-height: 540px) {
+  :root[data-skin='elysia'] .popup-header {
+    height: 78px;
+    min-height: 78px;
+  }
+  :root[data-skin='elysia'] .message {
+    max-height: 35px;
+  }
+}
+
+/* A deliberate reading mode keeps a character strip while returning space to the list. */
+:root[data-skin='elysia'] .header-collapsed .popup-header {
+  height: 44px;
+  min-height: 44px;
+  padding: 8px 16px;
+}
+:root[data-skin='elysia'] .header-collapsed .popup-header > .brand {
+  max-width: calc(100% - 180px);
+}
+:root[data-skin='elysia'] .header-collapsed .popup-header .brand strong {
+  font-size: 17px;
+}
+:root[data-skin='elysia'] .header-collapsed .popup-header .brand strong span {
+  font-size: 11px;
+}
+:root[data-skin='elysia'] .header-collapsed .popup-header .skin-avatar {
+  width: 27px;
+  height: 27px;
+}
+:root[data-skin='elysia'] .header-collapsed .elysia-header-caption,
+:root[data-skin='elysia'] .header-collapsed .popup-header .running-stat {
+  display: none;
+}
+.header-collapsed .elysia-header-art {
+  right: 110px;
+  top: -14px;
+  width: 124px;
+  height: 114px;
+}
+.header-collapsed .elysia-art-ring {
+  width: 100px;
+  height: 100px;
+  top: 5px;
+  left: 10px;
+}
+.header-collapsed .elysia-crystal {
+  width: 10px;
+  height: 24px;
+}
+.header-collapsed .elysia-crystal.crystal-1 {
+  top: 22px;
+}
+.header-collapsed .elysia-crystal.crystal-2 {
+  top: 26px;
+}
+:root[data-skin='elysia'] .header-collapsed .popup-header .header-actions > .text-icon {
+  left: auto;
+  right: 82px;
+  top: 9px;
+  bottom: auto;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 0;
+  justify-content: center;
+}

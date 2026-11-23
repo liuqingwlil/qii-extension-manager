@@ -6,6 +6,12 @@
 
 ## 安装
 
+### 使用发布压缩包
+
+[下载 v1.4.2 安装 ZIP](https://github.com/liuqingwlil/qii-extension-manager/releases/download/v1.4.2/qii-extension-manager-1.4.2.zip)
+
+**Chrome 和 Edge 共用同一个 ZIP。** 将 ZIP 解压到固定目录，在两个浏览器的扩展管理页分别加载直接包含 `manifest.json` 的目录。安装后请保留该目录，浏览器会继续从中读取扩展文件。
+
 ### 使用源码构建
 
 需要已安装 Node.js 与 npm，并使用满足 Vite 要求的 Node.js 版本。
@@ -18,10 +24,6 @@ npm run build
 ```
 
 构建成功后，从项目目录下的 `dist` 安装扩展。
-
-### 使用发布压缩包
-
-先将发布 ZIP 解压到固定目录。找到其中直接包含 `manifest.json` 的文件夹；加载该文件夹，不能直接选择 ZIP。后续请保留此目录，浏览器会继续从中读取扩展文件。
 
 ### 在 Chrome 中加载
 
@@ -38,6 +40,18 @@ npm run build
 4. 在工具栏的扩展菜单中显示“栖 · 扩展管理器”。
 
 安装时的“管理您的应用、扩展程序和主题背景”权限提示来自核心 `management` 权限。它用于读取扩展清单、启停扩展和发起卸载；另外只声明 `storage` 用于保存本地配置。
+
+## 界面截图
+
+截图来自 v1.4.2 的实际扩展界面，使用独立浏览器资料中的示例扩展。
+
+### 完整管理页
+
+![栖的完整管理页，显示扩展搜索、分组与启停状态](docs/screenshots/manager.png)
+
+### 工具栏快捷小窗
+
+![栖的工具栏快捷小窗，显示扩展列表和快捷操作](docs/screenshots/popup.png)
 
 ## 使用
 

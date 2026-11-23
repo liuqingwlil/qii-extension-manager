@@ -8,7 +8,7 @@
 
 ## 用户操作
 
-1. 在旧电脑运行 `QiiMigration.exe`。可以直接导出文件，也可以点击“连接管理器”，粘贴管理器显示的 32 位扩展 ID，然后回到管理器重新检测。
+1. 在旧电脑运行 `QiiMigration.exe`。可以直接导出文件，也可以选择“自动连接管理器”或“手动填写扩展 ID”，然后回到管理器重新检测。
 2. 导出时确认浏览器资料，核对扩展目录，选择 ZIP 保存位置。无法唯一匹配资料时必须明确选择，不会把其他资料中的同名项目混入。
 3. 非默认路径的浏览器资料可通过“选择自定义资料目录”定位。文件丢失或本地目录变化时，选中对应 ID 后点击“定位选中项的目录”；对应关系由用户明确确认，不按名称猜测。
 4. 把 ZIP 和助手带到新电脑。导入 ZIP，选择保存目录，查看文件校验结果和本地安装清单。
@@ -20,17 +20,18 @@
 
 - `qii_archive.py`：资料选择、代码目录解析、ZIP 生成、SHA256 校验及隔离恢复；无 GUI / 注册表操作。
 - `qii_migration.py`：Tkinter 图形界面、原生消息协议、用户主动触发的本地连接注册。
+- `qii_ui.py`：共享 Tk 样式、窗口控件和主界面。[设计整稿和切片](../../docs/migration-helper-ui/)
 - `QiiMigration.spec`：PyInstaller 单文件构建定义。
 - `test_archive.py`、`test_native.py`：只使用临时合成资料和清单，不读取用户浏览器资料，不注册主机。
 
 运行测试：
 
 ```powershell
-python -m unittest -v test_archive.py test_native.py
+python -m unittest discover -p "test_*.py" -v
 python qii_migration.py --self-test
 ```
 
-构建需要支持当前 Python 版本的 PyInstaller。当前验证环境为 Python 3.14.5、PyInstaller 6.22.3、Tk 9.0.4：
+构建需要支持当前 Python 版本的 PyInstaller。当前验证环境为 Python 3.14.7、PyInstaller 6.22.3、Tk 9.0.4：
 
 ```powershell
 python -m PyInstaller --clean --noconfirm QiiMigration.spec
@@ -38,7 +39,7 @@ python -m PyInstaller --clean --noconfirm QiiMigration.spec
 .\dist\QiiMigration.exe --self-test
 ```
 
-产物为 `dist/QiiMigration.exe`。构建启用 `console=True` 和 `hide_console='hide-early'`，保留原生消息所需的二进制 stdin/stdout；不能改成 `--windowed` 后继续使用同一协议。`--self-test` 检查 Tcl/Tk 可加载、临时合成代码文件往返和消息帧，不显示窗口、不读取真实资料、不修改注册表。
+产物为 `dist/QiiMigration.exe`。构建启用 `console=True` 和 `hide_console='hide-early'`，保留原生消息所需的二进制 stdin/stdout；不能改成 `--windowed` 后继续使用同一协议。`--self-test` 检查 Tcl/Tk、界面素材、临时合成代码文件往返和消息帧，仅使用合成资料并跳过注册。
 
 ## 原生消息连接
 
@@ -57,7 +58,7 @@ Chrome / Edge 启动 EXE 时会传入 `chrome-extension://<ID>/`。程序读取 
 {"action":"ping"}
 ```
 
-返回：`{"ok":true,"version":"1.0.0","capabilities":["export","import"]}`。
+返回：`{"ok":true,"version":"1.1.0","capabilities":["export","import"]}`。
 
 ```json
 {"action":"export","backup":{"app":"qii-extension-manager","version":2,"inventory":[],"data":{}},"browser":"Edge","managerId":"<32位ID>"}

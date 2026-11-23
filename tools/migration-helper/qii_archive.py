@@ -520,20 +520,202 @@ def _store_url(item: dict[str, Any]) -> str | None:
 
 
 def _write_guide(path: Path, result: dict[str, Any], source_items: list[dict[str, Any]]) -> None:
-    rows = []
+    cards = []
     for item, source in zip(result["items"], source_items):
         name = html.escape(item["name"])
+        identifier = html.escape(item["id"])
         code_path = html.escape(item.get("path", ""), quote=True)
         link = _store_url(source)
-        store = f'<a href="{html.escape(link, quote=True)}" target="_blank" rel="noopener noreferrer">打开官方商店</a>' if link else "本地/未知来源：在浏览器扩展页选择“加载解压缩的扩展”"
-        status = "文件已还原，待浏览器安装确认" if item["status"] == "files-restored" else html.escape(item.get("message", "文件未完整恢复"))
-        copy = f'<button data-path="{code_path}">复制目录</button><code>{code_path}</code>' if code_path else ""
-        rows.append(f"<tr><td><b>{name}</b><small>{html.escape(item['id'])}</small></td><td>{status}</td><td>{store}{copy}</td></tr>")
-    content = """<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>栖 · 扩展文件迁移清单</title>
-<style>body{font:15px/1.7 system-ui,'Microsoft YaHei';max-width:1100px;margin:40px auto;padding:0 24px;background:#f7f8f4;color:#2d3c31}h1{font-size:27px}p{max-width:850px}table{width:100%;border-collapse:collapse;background:white}td,th{padding:16px;text-align:left;border-bottom:1px solid #d9e0d7;vertical-align:top}small,code{display:block;font-size:12px;overflow-wrap:anywhere}small{color:#647168}button,a{display:inline-block;margin:5px 12px 5px 0;color:#315e46}button{padding:5px 12px;background:#eef2e9;border:1px solid #d9e0d7;border-radius:5px}a:focus-visible,button:focus-visible{text-decoration:underline}</style>
-<h1>扩展文件已解包，等待浏览器安装确认</h1><p>这里恢复的是扩展实际代码文件；没有把扩展静默安装进 Chrome 或 Edge。商店项目可前往官方商店安装，本地项目在 <b>chrome://extensions</b> 或 <b>edge://extensions</b> 打开开发者模式，再选择对应目录。一个本地目录对应一个扩展，不能选择总目录代替所有扩展。</p><p>本地扩展缺少固定 manifest.key 时，换电脑或目录可能改变 ID。请在安装后回到管理器核对状态；不要仅凭同名把不同 ID 当成已恢复。此备份不包含密码、Cookie、登录状态或其他扩展的私有存储。</p><table><thead><tr><th>扩展</th><th>文件结果</th><th>安装入口与目录</th></tr></thead><tbody>ROWS</tbody></table>
-<script>document.querySelectorAll('button[data-path]').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.path);b.textContent='已复制'}catch{prompt('复制下面的目录',b.dataset.path)}}));</script></html>"""
-    path.write_text(content.replace("ROWS", "".join(rows)), encoding="utf-8")
+        source_label = "商店扩展" if link else "本地或未知来源"
+        store_action = ""
+        if link:
+            store_action = (
+                f'<a class="action secondary" href="{html.escape(link, quote=True)}" '
+                'target="_blank" rel="noopener noreferrer">打开官方商店</a>'
+            )
+        restored = item["status"] == "files-restored"
+        status = "文件已还原，待浏览器安装确认" if restored else item.get("message", "文件未完整恢复")
+        status_class = "status" if restored else "status incomplete"
+        directory = ""
+        if code_path:
+            directory = f"""
+            <div class="directory">
+              <div class="directory-actions">
+                <code class="path" tabindex="-1">{code_path}</code>
+                <button class="action primary" type="button" data-path="{code_path}">复制目录路径</button>
+              </div>
+              <p class="copy-feedback" role="status"></p>
+            </div>"""
+        cards.append(f"""
+        <li class="extension">
+          <div class="extension-header">
+            <div>
+              <h3>{name}</h3>
+              <p class="source">{source_label} · <code>{identifier}</code></p>
+            </div>
+            {store_action}
+          </div>
+          <p class="{status_class}">{html.escape(status)}</p>
+          {directory}
+        </li>""")
+
+    items = f'<ul class="extensions">{"".join(cards)}</ul>' if cards else '<p class="empty">此迁移包没有扩展条目。</p>'
+    content = """<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>安装扩展清单 · 栖</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #f7f8f4;
+      --surface: #ffffff;
+      --border: #dee5df;
+      --heading: #253f34;
+      --text: #2d3c31;
+      --muted: #52655c;
+      --primary: #285140;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--background);
+      font: 1rem/1.65 "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+    }
+    main { width: min(100% - 3rem, 64rem); margin: 0 auto; padding: 2.5rem 0 3rem; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { color: var(--heading); line-height: 1.35; }
+    h1 { font-size: clamp(1.75rem, 4vw, 2.375rem); }
+    h2 { font-size: 1.125rem; }
+    h3 { font-size: 1rem; overflow-wrap: anywhere; }
+    .brand { margin-bottom: .625rem; color: var(--muted); font-size: .875rem; }
+    .lead { margin-top: .5rem; color: var(--muted); }
+    section { margin-top: 1.5rem; }
+    .instructions {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: 1.125rem 1.375rem;
+    }
+    ol { margin: .5rem 0 0; padding-left: 1.5rem; }
+    ol li + li { margin-top: .25rem; }
+    code { font-family: Consolas, "Microsoft YaHei UI", monospace; overflow-wrap: anywhere; }
+    .instructions code {
+      border: 1px solid var(--border);
+      border-radius: .25rem;
+      background: var(--background);
+      padding: 0 .25rem;
+      font-size: .875rem;
+    }
+    .extensions { display: grid; gap: .75rem; margin: .625rem 0 0; padding: 0; list-style: none; }
+    .extension, .empty {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: 1rem 1.25rem;
+    }
+    .extension-header, .directory-actions { display: flex; align-items: flex-start; gap: .75rem; }
+    .extension-header { justify-content: space-between; }
+    .extension-header > div { min-width: 0; }
+    .source, .status { margin-top: .25rem; color: var(--muted); font-size: .875rem; }
+    .incomplete { color: #784c20; }
+    .directory { margin-top: .75rem; }
+    .path {
+      flex: 1;
+      min-width: 0;
+      padding: .5rem .75rem;
+      border: 1px solid var(--border);
+      border-radius: .375rem;
+      background: var(--background);
+      font-size: .875rem;
+      white-space: break-spaces;
+      user-select: text;
+    }
+    .action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      min-height: 2.5rem;
+      padding: .375rem .875rem;
+      border: 1px solid transparent;
+      border-radius: .375rem;
+      font: inherit;
+      font-size: .875rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .action:focus-visible {
+      outline: none;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: .25em;
+    }
+    .secondary { color: var(--primary); border-color: var(--border); background: var(--surface); }
+    .secondary:hover { background: var(--background); }
+    .primary { color: #ffffff; background: var(--primary); }
+    .primary:hover { background: #213f33; }
+    .copy-feedback, footer { color: var(--muted); font-size: .875rem; }
+    .copy-feedback:not(:empty) { margin-top: .375rem; }
+    .empty { margin-top: .625rem; color: var(--muted); }
+    footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    @media (max-width: 36rem) {
+      main { width: calc(100% - 2rem); padding-top: 1.5rem; }
+      .extension-header, .directory-actions { flex-wrap: wrap; }
+      .path { flex-basis: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="brand">栖 · 扩展文件迁移助手</p>
+      <h1>安装扩展清单</h1>
+      <p class="lead">共 <!-- COUNT --> 个扩展。请在 Chrome 或 Edge 中完成安装。</p>
+    </header>
+    <section class="instructions" aria-labelledby="instructions-title">
+      <h2 id="instructions-title">安装步骤</h2>
+      <ol>
+        <li>商店扩展可通过下方的官方商店入口安装。</li>
+        <li>安装本地扩展时，在地址栏输入 <code>chrome://extensions</code> 或 <code>edge://extensions</code>，然后开启开发者模式。</li>
+        <li>选择“加载解压缩的扩展程序”，按清单中的目录逐个加载。</li>
+      </ol>
+    </section>
+    <section aria-labelledby="extensions-title">
+      <h2 id="extensions-title">扩展文件</h2>
+      <!-- EXTENSIONS -->
+    </section>
+    <footer>未固定 <code>manifest.key</code> 的本地扩展在更换电脑或目录后，ID 可能变化。安装后请回到管理器核对扩展状态和 ID。</footer>
+  </main>
+  <script>
+    document.querySelectorAll('button[data-path]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const directory = button.closest('.directory');
+        const path = directory.querySelector('.path');
+        const feedback = directory.querySelector('.copy-feedback');
+        try {
+          await navigator.clipboard.writeText(button.dataset.path);
+          button.textContent = '已复制';
+          feedback.textContent = '目录路径已复制。';
+        } catch {
+          button.textContent = '复制目录路径';
+          path.focus({preventScroll: true});
+          const range = document.createRange();
+          range.selectNodeContents(path);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          feedback.textContent = '目录路径已选中，按 Ctrl+C 复制。';
+        }
+      });
+    });
+  </script>
+</body>
+</html>"""
+    content = content.replace("<!-- COUNT -->", str(len(cards)), 1)
+    path.write_text(content.replace("<!-- EXTENSIONS -->", items, 1), encoding="utf-8")
 
 
 def restore_archive(archive_path: Path, destination_parent: Path) -> dict[str, Any]:

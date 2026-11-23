@@ -116,44 +116,165 @@ def default_roots() -> dict[str, Path]:
 class Interface:
     def __init__(self, *, native: bool = False):
         import tkinter as tk
-        from tkinter import filedialog, messagebox, simpledialog, ttk
+        from tkinter import filedialog, ttk
+        from qii_ui import Theme
 
+        if sys.platform == "win32":
+            from ctypes import windll
+            windll.user32.SetProcessDPIAware()
         self.tk, self.ttk = tk, ttk
-        self.filedialog, self.messagebox, self.simpledialog = filedialog, messagebox, simpledialog
+        self.filedialog = filedialog
         self.root = tk.Tk()
-        self.root.title("栖 · 扩展文件迁移助手")
-        self.root.configure(background="#f7f8f4")
-        self.root.geometry("720x510")
-        self.root.minsize(640, 460)
-        style = ttk.Style(self.root)
-        style.theme_use("clam")
-        style.configure("TFrame", background="#f7f8f4")
-        style.configure("TLabel", background="#f7f8f4", foreground="#2d3c31", font=("Microsoft YaHei UI", 10))
-        style.configure("Title.TLabel", font=("Microsoft YaHei UI", 20, "bold"))
-        style.configure("Hint.TLabel", foreground="#647168", font=("Microsoft YaHei UI", 9))
-        style.configure("TButton", padding=(12, 8), font=("Microsoft YaHei UI", 10))
-        style.map("TButton", background=[("active", "#e7ede3")])
-        style.configure("Treeview", font=("Microsoft YaHei UI", 9), rowheight=30, background="#fff", foreground="#2d3c31", fieldbackground="#fff")
-        style.map("Treeview", background=[("selected", "#e7ede3")], foreground=[("selected", "#2d3c31")])
         self.root.withdraw()
+        self.root.title("栖 · 扩展文件迁移助手")
+        self.ui = Theme(self.root)
         self.native = native
 
     def destroy(self):
         self.root.destroy()
 
-    def _modal(self, title: str, size: str = "840x500"):
+    def _modal(self, title, size, minimum=None, *, parent=None, cancellable=True):
+        owner = parent if parent is not None else self.root
         window = self.tk.Toplevel(self.root)
+        window.withdraw()
         window.title(title)
-        window.configure(background="#f7f8f4")
-        window.geometry(size)
-        window.minsize(650, 360)
         # A transient of a withdrawn root stays unmapped on Windows/Tk 9. Native
         # requests intentionally keep their root hidden, so their modal is unowned.
-        if self.root.winfo_viewable():
-            window.transient(self.root)
+        if owner.winfo_viewable():
+            window.transient(owner)
+        self.ui.prepare_window(window, size, minimum, parent=owner)
+        if cancellable:
+            window.bind("<Escape>", lambda _event: window.destroy())
+        else:
+            window.protocol("WM_DELETE_WINDOW", lambda: None)
+        return window
+
+    def _wait(self, window, focus=None):
+        previous_grab = self.root.grab_current()
+        previous_focus = self.root.focus_get()
+        window.deiconify()
+        window.update_idletasks()
         window.grab_set()
         window.lift()
-        return window
+        (focus if focus is not None else window).focus_set()
+        try:
+            self.root.wait_window(window)
+        finally:
+            if previous_grab is not None and previous_grab.winfo_exists():
+                previous_grab.grab_set()
+            if previous_focus is not None and previous_focus.winfo_exists():
+                previous_focus.focus_set()
+
+    def _page(self, window, title, subtitle=None, *, icon=None):
+        body = self.ui.frame(window, padding=(self.ui.px(32), self.ui.px(25)))
+        body.pack(fill="both", expand=True)
+        head = self.ui.frame(body)
+        head.pack(fill="x")
+        if icon is not None:
+            self.ui.label(head, image=icon).pack(side="left", anchor="n", padx=(0, self.ui.px(14)))
+        text = self.ui.frame(head)
+        text.pack(side="left", fill="x", expand=True)
+        self.ui.label(text, title, style="Title.TLabel", wrap=True).pack(fill="x")
+        if subtitle:
+            self.ui.label(text, subtitle, style="Hint.TLabel", wrap=True).pack(fill="x", pady=(self.ui.px(6), 0))
+        return body
+
+    def _actions(self, parent, *, primary=None, secondary=None, left=None):
+        row = self.ui.frame(parent)
+        row.pack(side="bottom", fill="x", pady=(self.ui.px(18), 0))
+        if left is not None:
+            self.ui.button(row, *left).pack(side="left")
+        end = self.ui.frame(row)
+        end.pack(side="right")
+        if secondary is not None:
+            self.ui.button(end, *secondary).pack(side="left", padx=(0, self.ui.px(8)) if primary else 0)
+        if primary is not None:
+            self.ui.button(end, *primary, kind="primary").pack(side="left")
+
+    def _notice(self, title, message, *, parent=None, warning=False):
+        window = self._modal(title, (545, 280 if warning else 240), parent=parent)
+        body = self.ui.frame(window, padding=(self.ui.px(30), self.ui.px(22)))
+        body.pack(fill="both", expand=True)
+        if warning and self.ui.images.get("warning"):
+            self.ui.label(body, image=self.ui.images["warning"]).pack(pady=(0, self.ui.px(10)))
+        self.ui.label(body, title, style="Heading.TLabel", wrap=True, anchor="center", justify="center").pack(fill="x")
+        button = self.ui.button(body, "返回" if warning else "完成", window.destroy, kind="secondary")
+        button.pack(side="bottom", pady=(self.ui.px(12), 0))
+        if len(message) > 220 or message.count("\n") > 4:
+            panel = self.ui.frame(body, style="Card.TFrame")
+            panel.pack(fill="both", expand=True, pady=(self.ui.px(10), 0))
+            detail = self.tk.Text(panel, wrap="word", height=3, relief="flat", highlightthickness=0,
+                                  takefocus=False, padx=self.ui.px(9), pady=self.ui.px(7),
+                                  background="#FFFFFF", foreground="#253F34", font=self.ui.body)
+            scrollbar = self.ttk.Scrollbar(panel, orient="vertical", command=detail.yview)
+            detail.configure(yscrollcommand=scrollbar.set)
+            detail.insert("1.0", message)
+            detail.configure(state="disabled")
+            scrollbar.pack(side="right", fill="y")
+            detail.pack(side="left", fill="both", expand=True)
+        else:
+            self.ui.label(body, message, style="Hint.TLabel", wrap=True, anchor="center", justify="center").pack(
+                fill="x", pady=(self.ui.px(10), 0))
+        self._wait(window, button)
+
+    def _copy_row(self, card, row, caption, value=None, *, variable=None):
+        pad = self.ui.px(6)
+        self.ui.label(card, caption, style="Card.TLabel").grid(
+            row=row, column=0, sticky="w", padx=(self.ui.px(12), self.ui.px(10)), pady=pad)
+        field = self.ui.copy_field(card, value or "", textvariable=variable)
+        field.grid(row=row, column=1, sticky="ew", pady=pad)
+        reset = []
+
+        def cancel_reset():
+            if reset:
+                button.after_cancel(reset.pop())
+
+        def restore_label(*_args):
+            cancel_reset()
+            button.configure(text="复制")
+
+        def copy():
+            if not field.get():
+                return
+            card.clipboard_clear()
+            card.clipboard_append(field.get())
+            cancel_reset()
+            button.configure(text="已复制")
+            reset.append(button.after(1500, restore_label))
+
+        button = self.ui.button(card, "复制", copy, kind="quiet", width=7)
+        button.grid(row=row, column=2, padx=(self.ui.px(8), self.ui.px(12)), pady=pad)
+        card.columnconfigure(1, weight=1)
+        trace = variable.trace_add("write", restore_label) if variable is not None else None
+
+        def cleanup(_event):
+            cancel_reset()
+            if trace is not None:
+                variable.trace_remove("write", trace)
+
+        button.bind("<Destroy>", cleanup, add=True)
+        return button
+
+    def _details(self, parent, fields):
+        card = self.ui.frame(parent, style="Card.TFrame", padding=(0, self.ui.px(4)))
+        card.pack(fill="x", pady=(self.ui.px(16), 0))
+        for index, (caption, value) in enumerate(fields):
+            self._copy_row(card, index, caption, value)
+
+    def _selected_path(self, parent, tree, caption):
+        path = self.tk.StringVar(parent)
+        card = self.ui.frame(parent, style="Card.TFrame")
+        card.pack(side="bottom", fill="x", pady=(self.ui.px(10), 0))
+        copy_button = self._copy_row(card, 0, caption, variable=path)
+
+        def sync(_event=None):
+            selected = tree.selection()
+            path.set(tree.set(selected[0], "path") if selected else "")
+            copy_button.state(["!disabled" if path.get() else "disabled"])
+
+        tree.bind("<<TreeviewSelect>>", sync, add=True)
+        sync()
+        return sync
 
     def choose_profile(self, browser: str | None, inventory=None, manager_id=None) -> Profile:
         profiles = discover_profiles({key: value for key, value in default_roots().items() if browser not in ("Chrome", "Edge") or key == browser})
@@ -162,23 +283,18 @@ class Interface:
                 return select_profile(profiles, inventory, manager_id)
             except ValueError:
                 pass
-        window = self._modal("选择要备份的浏览器资料", "850x450")
-        frame = self.ttk.Frame(window, padding=20)
-        frame.pack(fill="both", expand=True)
-        self.ttk.Label(frame, text="请选择当前管理器对应的浏览器资料", font=("Microsoft YaHei UI", 14, "bold")).pack(anchor="w")
-        self.ttk.Label(frame, text="同名扩展不会跨资料合并。自定义资料可手动选择包含 Preferences 的目录。", style="Hint.TLabel").pack(anchor="w", pady=(6, 12))
-        tree = self.ttk.Treeview(frame, columns=("browser", "name", "path"), show="headings", height=7, selectmode="browse")
-        for column, label, width in (("browser", "浏览器", 75), ("name", "资料", 130), ("path", "目录", 530)):
-            tree.heading(column, text=label)
-            tree.column(column, width=width, minwidth=60)
-        tree.pack(fill="both", expand=True)
+        window = self._modal("选择浏览器资料", (865, 470), (660, 365))
+        frame = self._page(window, "选择浏览器资料", "请选择要备份的 Chrome 或 Edge 资料。自定义资料可以手动定位。")
+        table, tree = self.ui.table(frame, (
+            ("browser", "浏览器", 105, 84), ("name", "资料", 168, 120), ("path", "目录", 550, 250),
+        ), height=6)
         for index, profile in enumerate(profiles):
             tree.insert("", "end", iid=str(index), values=(profile.browser, profile.name, str(profile.path)))
         if profiles:
             tree.selection_set("0")
+            tree.focus("0")
+        empty = self.ui.label(frame, "未发现浏览器资料，请选择自定义资料目录。", style="Hint.TLabel", wrap=True)
         result = []
-        buttons = self.ttk.Frame(frame)
-        buttons.pack(fill="x", pady=(16, 0))
 
         def browse():
             chosen = self.filedialog.askdirectory(parent=window, title="选择包含 Preferences / Secure Preferences 的浏览器资料目录", mustexist=True)
@@ -186,58 +302,59 @@ class Interface:
                 return
             path = Path(chosen)
             if not any((path / name).is_file() for name in ("Preferences", "Secure Preferences")):
-                self.messagebox.showerror("目录不匹配", "请选择具体的 Default / Profile 目录，而不是 User Data 总目录。", parent=window)
+                self._notice("目录不匹配", "请选择含有 Preferences 或 Secure Preferences 的具体资料目录。", parent=window, warning=True)
                 return
             profile = Profile(browser or "Chrome", path.name, path)
             index = len(profiles)
             profiles.append(profile)
             tree.insert("", "end", iid=str(index), values=(profile.browser, profile.name, str(profile.path)))
             tree.selection_set(str(index))
+            tree.focus(str(index))
             tree.see(str(index))
+            empty.pack_forget()
 
         def accept():
             if not tree.selection():
-                self.messagebox.showinfo("选择资料", "请先选择一项资料，或手动定位目录。", parent=window)
+                self._notice("请选择一项资料", "请选择表中的资料，或手动定位资料目录。", parent=window)
                 return
             profile = profiles[int(tree.selection()[0])]
             try:
                 read_profile_inventory(profile)
             except Exception as error:
-                self.messagebox.showerror("资料无法读取", str(error), parent=window)
+                self._notice("资料无法读取", str(error), parent=window, warning=True)
                 return
             result.append(profile)
             window.destroy()
 
-        self.ttk.Button(buttons, text="选择自定义资料目录", command=browse).pack(side="left")
-        self.ttk.Button(buttons, text="使用所选资料", command=accept).pack(side="right")
-        self.ttk.Button(buttons, text="取消", command=window.destroy).pack(side="right", padx=8)
-        self.root.wait_window(window)
+        self._actions(frame, left=("选择自定义资料目录", browse), secondary=("取消", window.destroy),
+                      primary=("使用所选资料", accept))
+        self._selected_path(frame, tree, "资料目录")
+        if not profiles:
+            empty.pack(fill="x", pady=(self.ui.px(12), 0))
+        table.pack(fill="both", expand=True, pady=(self.ui.px(16), 0))
+        tree.bind("<Return>", lambda _event: accept())
+        self._wait(window)
         if not result:
             raise Cancelled()
         return result[0]
 
     def review_sources(self, profile: Profile, inventory) -> dict[str, Path]:
         rows = preview_sources(profile, inventory)
-        window = self._modal("核对扩展文件目录", "900x520")
-        frame = self.ttk.Frame(window, padding=20)
-        frame.pack(fill="both", expand=True)
-        self.ttk.Label(frame, text=f"{profile.browser} · {profile.name} · {len(rows)} 个扩展", font=("Microsoft YaHei UI", 14, "bold")).pack(anchor="w")
-        self.ttk.Label(frame, text="备份实际代码目录和管理器配置，不复制密码、Cookie 或浏览器整份资料。缺失的本地扩展可在下面明确定位。", wraplength=840, style="Hint.TLabel").pack(anchor="w", pady=(6, 12))
-        tree = self.ttk.Treeview(frame, columns=("name", "status", "path"), show="headings", selectmode="browse")
-        for column, title, width in (("name", "扩展", 220), ("status", "文件状态", 90), ("path", "源目录或原因", 510)):
-            tree.heading(column, text=title)
-            tree.column(column, width=width, minwidth=60)
-        tree.pack(fill="both", expand=True)
+        window = self._modal("核对扩展文件目录", (960, 575), (720, 430))
+        frame = self._page(window, "核对扩展文件目录", f"{profile.browser} · {profile.name} · {len(rows)} 个扩展")
+        self.ui.label(frame, "请核对要备份的代码目录。若发现源目录缺失，可选中该扩展并手动定位。",
+                      style="Hint.TLabel", wrap=True).pack(fill="x", pady=(self.ui.px(6), 0))
+        table, tree = self.ui.table(frame, (
+            ("name", "扩展", 240, 150), ("status", "文件状态", 108, 92), ("path", "源目录或原因", 650, 320),
+        ), height=8)
         for index, row in enumerate(rows):
             tree.insert("", "end", iid=str(index), values=(row["name"], "可读取" if row.get("path") else "未找到", row.get("path", row.get("problem", ""))))
         overrides: dict[str, Path] = {}
         accepted = []
-        buttons = self.ttk.Frame(frame)
-        buttons.pack(fill="x", pady=(16, 0))
 
         def locate():
             if not tree.selection():
-                self.messagebox.showinfo("选择扩展", "请先选择需要手动定位的一项扩展。", parent=window)
+                self._notice("请选择一项扩展", "在表格中选择需要手动定位的扩展。", parent=window)
                 return
             index = int(tree.selection()[0])
             row = rows[index]
@@ -245,35 +362,48 @@ class Interface:
             if not chosen:
                 return
             if not (Path(chosen) / "manifest.json").is_file():
-                self.messagebox.showerror("目录不匹配", "所选目录没有 manifest.json。", parent=window)
+                self._notice("目录不匹配", "所选目录没有 manifest.json。", parent=window, warning=True)
                 return
-            if not self.messagebox.askyesno("确认目录对应关系", f"明确将下面的目录作为此 ID 的文件来源？\n\n{row['name']}\n{row['id']}\n\n{chosen}\n\n助手不会仅凭名称猜测对应关系。", parent=window):
+            if not self._confirm_source(window, row, chosen):
                 return
             overrides[row["id"]] = Path(chosen)
             tree.item(str(index), values=(row["name"], "手动定位", chosen))
+            sync_path()
 
         def accept():
             accepted.append(True)
             window.destroy()
 
-        self.ttk.Button(buttons, text="定位选中项的目录", command=locate).pack(side="left")
-        self.ttk.Button(buttons, text="继续导出", command=accept).pack(side="right")
-        self.ttk.Button(buttons, text="取消", command=window.destroy).pack(side="right", padx=8)
-        self.root.wait_window(window)
+        self._actions(frame, left=("定位选中项的目录", locate), secondary=("取消", window.destroy),
+                      primary=("继续导出", accept))
+        sync_path = self._selected_path(frame, tree, "选中项路径或原因")
+        table.pack(fill="both", expand=True, pady=(self.ui.px(16), 0))
+        self._wait(window)
         if not accepted:
             raise Cancelled()
         return overrides
 
+    def _confirm_source(self, parent, row, path):
+        window = self._modal("确认目录对应关系", (680, 362), (580, 332), parent=parent)
+        body = self._page(window, "确认目录对应关系", "确认将此目录作为下面这个扩展 ID 的文件来源。")
+        self._details(body, (("扩展名称", row["name"]), ("扩展 ID", row["id"]), ("源目录", path)))
+        confirmed = False
+
+        def accept():
+            nonlocal confirmed
+            confirmed = True
+            window.destroy()
+
+        self._actions(body, secondary=("返回", window.destroy), primary=("使用此目录", accept))
+        self._wait(window)
+        return confirmed
+
     def run_file_task(self, label: str, callback):
-        window = self._modal(label, "660x210")
-        window.minsize(560, 190)
-        window.protocol("WM_DELETE_WINDOW", lambda: None)
-        frame = self.ttk.Frame(window, padding=24)
-        frame.pack(fill="both", expand=True)
-        self.ttk.Label(frame, text=label, font=("Microsoft YaHei UI", 14, "bold")).pack(anchor="w")
-        self.ttk.Label(frame, text="正在读写并校验文件，请等待完成。不会修改浏览器资料或安装扩展。", style="Hint.TLabel").pack(anchor="w", pady=12)
+        window = self._modal(label, (630, 218), (500, 200), cancellable=False)
+        frame = self._page(window, label, "正在读写并校验文件，请等待处理完成。")
         bar = self.ttk.Progressbar(frame, mode="indeterminate")
-        bar.pack(fill="x")
+        bar.pack(fill="x", pady=(self.ui.px(28), 0))
+        self.ui.label(frame, "处理在本机进行。", style="Small.TLabel").pack(anchor="w", pady=(self.ui.px(10), 0))
         bar.start(20)
         results: queue.Queue = queue.Queue()
 
@@ -295,7 +425,7 @@ class Interface:
                 window.destroy()
 
         window.after(80, poll)
-        self.root.wait_window(window)
+        self._wait(window)
         if not response:
             raise RuntimeError("文件处理未返回结果")
         success, result = response[0]
@@ -330,39 +460,117 @@ class Interface:
         return self.run_file_task("正在恢复并校验扩展文件", lambda: restore_archive(Path(selected), Path(parent)))
 
     def show_result(self, result):
+        complete = result["complete"]
+        guide = result.get("guidePath")
+        note = None
         if result["action"] == "export":
-            title = "扩展文件已完整备份" if result["complete"] else "备份已生成，部分文件未完整保存"
-            content = f"{result['archivePath']}\n\n{len(result['items'])} 项扩展，{result.get('fileCount', 0)} 个代码文件。"
+            title = "扩展文件已完整备份" if complete else "备份已生成，部分文件未完整保存"
+            summary = f"{len(result['items'])} 项扩展 · {result.get('fileCount', 0)} 个代码文件"
+            paths = [("备份文件", result["archivePath"])]
             if not result.get("managerConfigIncluded"):
-                content += "\n本次独立导出未收到管理器配置；从管理器内导出可同时保存配置。"
+                note = "管理器配置可在扩展管理器内一并导出。"
         else:
-            title = "文件已恢复，等待浏览器安装确认" if result["complete"] else "文件部分恢复，请查看报告"
-            content = f"{result['directory']}\n\n浏览器扩展尚未自动安装。打开恢复目录中的“安装扩展清单.html”，按浏览器要求完成安装。\n本地扩展换目录后 ID 可能变化。"
+            title = "扩展文件已恢复" if complete else "扩展文件已部分恢复"
+            summary = "请按安装清单在浏览器中完成安装。" if complete else "请查看迁移报告，并按安装清单完成浏览器安装。"
+            paths = [("恢复目录", result["directory"])]
+            note = "本地扩展迁移到新目录后，扩展 ID 可能变化。"
         if result.get("reportPath"):
-            content += f"\n\n完整逐项报告：{result['reportPath']}"
-        self.messagebox.showinfo(title, content, parent=self.root)
-        if result.get("guidePath") and self.messagebox.askyesno("查看安装清单", "是否打开刚生成的本地安装清单？", parent=self.root):
-            os.startfile(result["guidePath"])
+            paths.append(("迁移报告", result["reportPath"]))
+        window = self._modal(title, (695, 364), (590, 326))
+        image = self.ui.images.get("success" if complete else "warning")
+        body = self._page(window, title, summary, icon=image)
+        self._details(body, paths)
+        if note:
+            self.ui.label(body, note, style="Hint.TLabel", wrap=True).pack(fill="x", pady=(self.ui.px(10), 0))
+
+        def open_guide():
+            try:
+                os.startfile(guide)
+            except OSError as error:
+                self._notice("无法打开安装清单", str(error), parent=window, warning=True)
+
+        self._actions(body, primary=("完成", window.destroy),
+                      secondary=("打开安装清单", open_guide) if guide else None)
+        self._wait(window)
+
+    def _ask_identifier(self):
+        window = self._modal("连接管理器", (632, 298), (522, 270))
+        body = self._page(window, "连接管理器", "粘贴扩展管理器页面显示的扩展 ID，以建立本地连接。")
+        self.ui.label(body, "扩展 ID").pack(anchor="w", pady=(self.ui.px(14), self.ui.px(5)))
+        typed_id = self.tk.StringVar(window)
+        entry = self.ui.entry(body, textvariable=typed_id)
+        entry.pack(fill="x")
+        help_text = "扩展 ID 由 a–p 组成，共 32 位。"
+        feedback = self.tk.StringVar(window, value=help_text)
+        guidance = self.ui.label(body, textvariable=feedback, style="Hint.TLabel", wrap=True)
+        guidance.pack(fill="x", pady=(self.ui.px(6), 0))
+        result = []
+
+        def clear_error(*_args):
+            if guidance.cget("style") == "Error.TLabel":
+                feedback.set(help_text)
+                guidance.configure(style="Hint.TLabel")
+
+        typed_id.trace_add("write", clear_error)
+
+        def accept():
+            identifier = entry.get().strip()
+            if not ID_RE.fullmatch(identifier):
+                feedback.set("请检查输入。扩展 ID 由 a–p 组成，共 32 位。")
+                guidance.configure(style="Error.TLabel")
+                entry.focus_set()
+                return
+            result.append(identifier)
+            window.destroy()
+
+        entry.bind("<Return>", lambda _event: accept())
+        self._actions(body, secondary=("取消", window.destroy), primary=("保存连接", accept))
+        self._wait(window, entry)
+        return result[0] if result else None
 
     def register(self):
         if os.name != "nt" or not getattr(sys, "frozen", False):
-            self.messagebox.showerror("需要 Windows 安装包", "请使用打包后的 QiiMigration.exe 连接管理器；源码运行不会注册原生消息主机。", parent=self.root)
+            self._notice("请使用 Windows 版助手", "连接管理器需要运行打包后的 QiiMigration.exe。", warning=True)
             return
-        identifier = self.simpledialog.askstring("连接管理器", "粘贴管理器页面显示的 32 位扩展 ID：", parent=self.root)
+        identifier = self._ask_identifier()
         if identifier is None:
-            return
-        identifier = identifier.strip()
-        if not ID_RE.fullmatch(identifier):
-            self.messagebox.showerror("ID 无效", "扩展 ID 应是由 a–p 组成的 32 位字符串。", parent=self.root)
             return
         try:
             path = register_host(identifier)
         except Exception as error:
-            self.messagebox.showerror("连接未完成", str(error), parent=self.root)
+            self._notice("连接未完成", str(error), warning=True)
             return
-        if hasattr(self, 'connection_status'):
-            self.connection_status.set('配置已保存 · 等待浏览器授权/自动检测')
-        self.messagebox.showinfo("连接配置已保存", f"本地助手已安装到：\n{path}\n\n网页会自动检测连接。首次使用需在网页允许本地通信权限。", parent=self.root)
+        self.connection_status.set("配置已保存 · 等待浏览器授权或检测")
+        window = self._modal("连接配置已保存", (662, 296), (558, 266))
+        body = self._page(window, "连接配置已保存", "返回扩展管理器完成连接检测。首次使用时，请在浏览器中允许本地通信权限。",
+                          icon=self.ui.images.get("success"))
+        self._details(body, (("助手位置", str(path)),))
+        self._actions(body, primary=("完成", window.destroy))
+        self._wait(window)
+
+    def _choose_manager(self, candidates):
+        window = self._modal("选择扩展管理器", (825, 420), (650, 320))
+        body = self._page(window, "选择扩展管理器", "发现了多个管理器，请选择要连接的浏览器资料。")
+        table, tree = self.ui.table(body, (
+            ("browser", "浏览器", 118, 88), ("profile", "浏览器资料", 182, 130), ("id", "扩展 ID", 390, 310),
+        ), height=5)
+        for index, candidate in enumerate(candidates):
+            tree.insert("", "end", iid=str(index), values=(candidate["browser"], candidate["profile"], candidate["id"]))
+        tree.selection_set("0")
+        tree.focus("0")
+        result = []
+
+        def accept():
+            selection = tree.selection()
+            if selection:
+                result.append(candidates[int(selection[0])])
+                window.destroy()
+
+        tree.bind("<Return>", lambda _event: accept())
+        self._actions(body, secondary=("取消", window.destroy), primary=("连接所选管理器", accept))
+        table.pack(fill="both", expand=True, pady=(self.ui.px(16), 0))
+        self._wait(window)
+        return result[0] if result else None
 
     def automatic_connection(self, interactive=False):
         try:
@@ -374,11 +582,9 @@ class Interface:
                 if not interactive:
                     self.connection_status.set(f'发现 {len(candidates)} 个管理器 · 点击“自动连接管理器”选择')
                     return
-                choices = '\n'.join(f"{i+1}. {row['browser']} · {row['profile']} · {row['id']}" for i,row in enumerate(candidates))
-                selected = self.simpledialog.askinteger('选择管理器', choices, minvalue=1, maxvalue=len(candidates), parent=self.root)
-                if selected is None:
+                candidate = self._choose_manager(candidates)
+                if candidate is None:
                     return
-                candidate = candidates[selected - 1]
             else:
                 candidate = candidates[0]
             register_host(candidate['id'])
@@ -398,35 +604,20 @@ class Interface:
         self.root.after(3000, self.refresh_connection_status)
 
     def standalone(self):
-        self.root.deiconify()
-        frame = self.ttk.Frame(self.root, padding=28)
-        frame.pack(fill="both", expand=True)
-        self.ttk.Label(frame, text="把扩展文件一起带走", style="Title.TLabel").pack(anchor="w")
-        self.ttk.Label(frame, text="栖 · Windows 本地迁移助手", style="Hint.TLabel").pack(anchor="w", pady=(6, 20))
-        self.ttk.Label(frame, text="一起保存商店扩展和本地扩展的实际代码。导入会校验并解包到新目录，不会把解包成功误报成浏览器安装成功。", wraplength=650).pack(anchor="w", pady=(0, 18))
-        row = self.ttk.Frame(frame)
-        row.pack(fill="x", pady=6)
-
         def action(callback):
             try:
                 self.show_result(callback())
             except Cancelled:
                 pass
             except Exception as error:
-                self.messagebox.showerror("操作未完成", str(error), parent=self.root)
+                self._notice("操作未完成", str(error), warning=True)
 
-        self.ttk.Button(row, text="导出扩展文件 ZIP", command=lambda: action(lambda: self.export({}))).pack(side="left", expand=True, fill="x", padx=(0, 8))
-        self.ttk.Button(row, text="导入扩展文件 ZIP", command=lambda: action(self.restore)).pack(side="left", expand=True, fill="x")
-        self.ttk.Label(frame, text="Chrome / Edge 首次安装与授权仍由浏览器确认。备份不包含密码、登录状态或其他扩展的私有设置。", wraplength=650, style="Hint.TLabel").pack(anchor="w", pady=(18, 12))
-        self.connection_status = self.tk.StringVar(value='正在自动识别管理器…')
-        self.ttk.Label(frame, textvariable=self.connection_status, wraplength=650).pack(anchor='w', pady=(5, 10))
-        connection_row = self.ttk.Frame(frame)
-        connection_row.pack(fill='x')
-        self.ttk.Button(connection_row, text="自动连接管理器", command=lambda: self.automatic_connection(True)).pack(side='left')
-        self.ttk.Button(connection_row, text="手动填写扩展 ID", command=self.register).pack(side='left', padx=8)
+        self.connection_status = self.tk.StringVar(self.root, value="正在自动识别管理器…")
+        self.ui.prepare_window(self.root, (808, 482), (690, 450))
+        self.ui.home(self, VERSION, lambda: action(lambda: self.export({})), lambda: action(self.restore))
+        self.root.deiconify()
         self.root.after(150, self.automatic_connection)
         self.root.after(3000, self.refresh_connection_status)
-        self.ttk.Label(frame, text=f"v{VERSION} · 无网络上传 · 仅在你选择资料和路径后处理文件", style="Hint.TLabel").pack(anchor="w", side="bottom", pady=(14, 0))
         self.root.mainloop()
 
 
@@ -529,12 +720,13 @@ def native_main(origin: str) -> int:
 
 def self_test() -> dict[str, Any]:
     """Packaged-runtime smoke test; no real profiles, registry or visible windows."""
-    import tkinter as tk
-    window = tk.Tk()
-    window.withdraw()
-    window.update_idletasks()
-    tcl_version = window.tk.call("info", "patchlevel")
-    window.destroy()
+    interface = Interface()
+    try:
+        interface.root.update_idletasks()
+        tcl_version = interface.root.tk.call("info", "patchlevel")
+        assert set(interface.ui.images) == {"icon", "folder", "export", "import", "warning", "success"}
+    finally:
+        interface.destroy()
     stream = io.BytesIO()
     write_message(stream, {"ok": True, "version": VERSION})
     stream.seek(0)
@@ -553,7 +745,7 @@ def self_test() -> dict[str, Any]:
         restored = restore_archive(root / "test.zip", root)
         assert export["complete"] and restored["complete"] and restored["installed"] is False
         assert (Path(restored["directory"]) / "extensions" / ("a" * 32) / "content.js").read_bytes() == b"console.log('self-test');"
-    return {"ok": True, "version": VERSION, "tkVersion": str(tcl_version), "archiveRoundTrip": True, "nativeFraming": True, "realProfilesRead": False, "registryModified": False}
+    return {"ok": True, "version": VERSION, "tkVersion": str(tcl_version), "uiAssetsLoaded": True, "archiveRoundTrip": True, "nativeFraming": True, "realProfilesRead": False, "registryModified": False}
 
 
 def main() -> int:
